@@ -1,0 +1,63 @@
+* aswitch
+
+Treat an analog pin like a digital switch.
+
+I use this with [[www.pjrc.com/teensy/teensyLC.html][Teensy LC]] and [[platformio.org][PlatformIO]] but you could use it with [[arduino.cc][Arduino]] also.
+
+To use, first =#include= it in your program.
+
+#+BEGIN_SRC
+#include "aswitch.hpp"
+#+END_SRC
+
+Then, create an instance of the =aswitch= class, passing a pin number and a reader function:
+
+#+BEGIN_SRC
+Aswitch my_analog_switch{A0,analogRead};
+#+END_SRC
+
+During the course of the program, poll the switch, and sometime afterward, check to see if it was "pressed":
+
+#+BEGIN_SRC
+my_analog_switch.update();
+// some time later...
+if(my_analog_switch.hl()){
+    // do something in response to high-to-low transitions
+}
+#+END_SRC
+
+That's it!
+
+* How it works
+Internally, =Aswitch.hpp= uses a small buffer of previous reads, and each time you call =update()=, it:
+
+- reads the switch
+- compares the most-recent value with the average of all the previous values
+- if the recent value exceeds this threshold /above/ the average, the next call to =lh()= will be true
+- if the recent value exceeds this threshold /below/ the average, the next call to =hl()= will be true
+- otherwise, =lh()= and =hl()= return false
+
+The idea behind =lh()= and =hl()= is that they should only return true once, and the only way to make them return true again is to detect another transition in =update()=.
+
+This arrangement makes the intended usage simpler:
+
+#+BEGIN_SRC
+#include "Aswitch.hpp"
+
+Aswitch my_analog_switch{A0,analogRead};
+elapsedMillis interval; // Teensy standard library
+
+void setup(){}
+
+void loop() {
+    my_analog_switch.update(); // update at start of each iteration
+
+    if(my_analog_switch.lh()){
+        // do something in response to a low-to-high transition
+    }
+    if(my_analog_switch.hl()){
+        // do something in response to a high-to-low transition
+    }
+}
+#+END_SRC
+
