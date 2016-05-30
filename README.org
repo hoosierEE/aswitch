@@ -6,19 +6,19 @@ I use this with [[www.pjrc.com/teensy/teensyLC.html][Teensy LC]] and [[platformi
 
 To use, first =#include= it in your program.
 
-#+BEGIN_SRC
+#+BEGIN_SRC C++
 #include "aswitch.hpp"
 #+END_SRC
 
 Then, create an instance of the =aswitch= class, passing a pin number and a reader function:
 
-#+BEGIN_SRC
+#+BEGIN_SRC C++
 Aswitch my_analog_switch{A0,analogRead};
 #+END_SRC
 
 During the course of the program, poll the switch, and sometime afterward, check to see if it was "pressed":
 
-#+BEGIN_SRC
+#+BEGIN_SRC C++
 my_analog_switch.update();
 // some time later...
 if(my_analog_switch.hl()){
@@ -26,7 +26,7 @@ if(my_analog_switch.hl()){
 }
 #+END_SRC
 
-That's it!
+That's it!  That's the entire API.
 
 * How it works
 Internally, =Aswitch.hpp= uses a small buffer of previous reads, and each time you call =update()=, it:
@@ -41,7 +41,7 @@ The idea behind =lh()= and =hl()= is that they should only return true once, and
 
 This arrangement makes the intended usage simpler:
 
-#+BEGIN_SRC
+#+BEGIN_SRC C++
 #include "Aswitch.hpp"
 
 Aswitch my_analog_switch{A0,analogRead};
